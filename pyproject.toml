@@ -1,0 +1,11 @@
+[project]
+name = "map-reshader"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "litemapy>=0.11.0b0",
+    "nbtlib>=2.0.4",
+    "z3-solver>=4.15.4.0",
+]
