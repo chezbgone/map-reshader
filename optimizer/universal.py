@@ -6,7 +6,8 @@ import time
 import z3
 from z3 import If, Int, Or, Sum, sat
 
-from mapart import ReifiedMapArt
+from mapart import StaircasedMapArt
+
 
 @dataclass
 class UniversalOptimizationInfo:
@@ -15,25 +16,24 @@ class UniversalOptimizationInfo:
     final_eq_hpairs: int
     time_taken: timedelta
 
-def optimize(mapart: ReifiedMapArt) -> UniversalOptimizationInfo:
+
+def optimize(mapart: StaircasedMapArt) -> UniversalOptimizationInfo:
     unoptimized_horizontal_equal_pairs = sum(
         1
-        for row in mapart.height_map
+        for row in mapart.all_heights
         for left, right in pairwise(row)
-        if left is not None and
-            right is not None and
-            left == right
+        if left is not None and right is not None and left == right
     )
-    
+
     opt = z3.Optimize()
-    opt.set('timeout', 10000)
+    opt.set("timeout", 10000)
 
     height_map_augmented = [
         [
             (Int(f"h_{i}_{j}"), cell) if cell is not None else None
             for i, cell in enumerate(row)
         ]
-        for j, row in enumerate(mapart.height_map)
+        for j, row in enumerate(mapart.all_heights)
     ]
     for row in height_map_augmented:
         for cell in row:
@@ -41,7 +41,7 @@ def optimize(mapart: ReifiedMapArt) -> UniversalOptimizationInfo:
                 continue
             var, _ = cell
             opt.add(var >= 0)
-    
+
     for column in zip(*height_map_augmented):
         for top, bottom in pairwise(column):
             if top is None or bottom is None:
@@ -63,7 +63,7 @@ def optimize(mapart: ReifiedMapArt) -> UniversalOptimizationInfo:
                 right_var, _ = right
                 condition = Or(left_var == right_var, left_var == 0, right_var == 0)
                 horizontal_equal_pairs.append(If(condition, 1, 0))
-    total_horizontal_equal_pairs = Int('total_horizontal_equal_pairs')
+    total_horizontal_equal_pairs = Int("total_horizontal_equal_pairs")
     opt.add(total_horizontal_equal_pairs == Sum(horizontal_equal_pairs))
 
     opt.maximize(total_horizontal_equal_pairs)
@@ -84,20 +84,24 @@ def optimize(mapart: ReifiedMapArt) -> UniversalOptimizationInfo:
     model = opt.model()
     values: list[list[int | None]] = [
         [
-            model.evaluate(cell[0]).as_long() if cell is not None else None # type: ignore
+            model.evaluate(cell[0]).as_long() if cell is not None else None  # type: ignore
             for cell in row
         ]
         for row in height_map_augmented
     ]
 
-    mapart.height_map = values
+    mapart.padding_heights, *grid = values
+    for row, new_heights in zip(mapart.blocks, grid):
+        for block, new_height in zip(row, new_heights):
+            if block is None:
+                continue
+            block.height = new_height  # type: ignore
+
     final_horizontal_equal_pairs = sum(
         1
-        for row in mapart.height_map
+        for row in mapart.all_heights
         for left, right in pairwise(row)
-        if left is not None and
-            right is not None and
-            left == right
+        if left is not None and right is not None and left == right
     )
 
     return UniversalOptimizationInfo(
