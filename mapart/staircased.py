@@ -1,99 +1,22 @@
-from typing import Self, TypedDict
+from typing import TypedDict
 
 from collections import defaultdict
-from enum import Enum
 from dataclasses import dataclass, field
-from functools import cached_property
+from enum import Enum
 from itertools import chain, pairwise
 
-from nbtlib import Compound, List
 from litemapy import Schematic, Region, BlockState
+from nbtlib import Compound
 
 import NBT
 
-
-class Shading(Enum):
-    DARK = 1
-    FLAT = 2
-    LITE = 3
-    DARKER = 4  # special unobtainable in vanilla
-
-
-@dataclass
-class Pixel:
-    block_name: str
-    shading: Shading
-
+type Coords = tuple[int, int]
 
 class Staircasing(Enum):
     FLAT = 1
     UP = 2
     DOWN = 3
     BOTH = 4
-
-
-class ReificationStrategy(Enum):
-    SIMPLE = 1
-    PAIRWISE = 2
-    UNIVERSAL = 3
-
-
-type Coords = tuple[int, int]
-
-
-@dataclass
-class MapArt:
-    pixels: list[list[Pixel | None]]
-
-    @property
-    def size(self) -> int:
-        return len(self.pixels[0])
-
-    @cached_property
-    def staircasing(self) -> Staircasing:
-        has_up = False
-        has_down = False
-        for row in self.pixels:
-            for pixel in row:
-                if pixel is None:
-                    continue
-                if pixel.shading == Shading.DARK:
-                    has_down = True
-                if pixel.shading == Shading.LITE:
-                    has_up = True
-                if has_up and has_down:
-                    break
-            else:  # if no break
-                continue
-            break  # up and down already achieved
-        match (has_up, has_down):
-            case (True, True):
-                return Staircasing.BOTH
-            case (True, False):
-                return Staircasing.UP
-            case (False, True):
-                return Staircasing.DOWN
-            case (False, False):
-                return Staircasing.FLAT
-
-    def reify(self, strategy: ReificationStrategy) -> StaircasedMapArt:
-        match strategy:
-            case ReificationStrategy.SIMPLE:
-                return self._reify_simple()
-            case ReificationStrategy.PAIRWISE:
-                return self._reify_simple()
-            case ReificationStrategy.UNIVERSAL:
-                return self._reify_simple()
-
-    def _reify_simple(self) -> StaircasedMapArt:
-        raise ValueError("todo")
-
-    def _reify_pairwise(self) -> StaircasedMapArt:
-        raise ValueError("todo")
-
-    def _reify_universal(self) -> StaircasedMapArt:
-        raise ValueError("todo")
-
 
 @dataclass
 class Block:
@@ -132,8 +55,8 @@ class StaircasedMapArt:
             ),
         ]
 
-    @staticmethod
-    def from_nbt_file(schem: Compound, size: int = 128) -> StaircasedMapArt:
+    @classmethod
+    def from_nbt_file(cls, schem: Compound, size: int = 128) -> StaircasedMapArt:
         # list of blocks without air
         block_list = [
             (coords, block_name)
@@ -161,7 +84,7 @@ class StaircasedMapArt:
             if block is None:
                 _padding_heights[x] = None
 
-        return StaircasedMapArt(_blocks, _padding_heights)
+        return cls(_blocks, _padding_heights)
 
     def analyze_staircasing(self):
         def get_height_opt(block_opt: Block | None):
