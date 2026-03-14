@@ -5,7 +5,6 @@ from itertools import pairwise
 import time
 from typing import Literal
 
-import numpy as np
 import z3
 from z3 import If, Int, Or, Sum, unsat
 
@@ -65,9 +64,9 @@ def optimize_monotonically_bright(
         horizontal_pairs = []
 
         # create variables and horizontal pair conditions
-        for z, (l, r) in enumerate(zip(left, right)):
-            l_var = Int(f"l_{z}") if l is not None else None
-            r_var = Int(f"r_{z}") if r is not None else None
+        for z, (left_val, right_val) in enumerate(zip(left, right)):
+            l_var = Int(f"l_{z}") if left_val is not None else None
+            r_var = Int(f"r_{z}") if right_val is not None else None
             l_vars.append(l_var)
             r_vars.append(r_var)
             if l_var is not None:
@@ -79,12 +78,12 @@ def optimize_monotonically_bright(
                 horizontal_pairs.append(If(condition, 1, 0))
 
         # monotonicity constraints
-        for z, (l, l_) in enumerate(pairwise(left)):
-            if l is None or l_ is None:
+        for z, (left_curr, left_next) in enumerate(pairwise(left)):
+            if left_curr is None or left_next is None:
                 continue
-            if l < l_:
+            if left_curr < left_next:
                 opt.add(l_vars[z] < l_vars[z + 1])
-            elif l > l_:
+            elif left_curr > left_next:
                 opt.add(l_vars[z] > l_vars[z + 1])
             else:
                 opt.add(l_vars[z] == l_vars[z + 1])
@@ -102,8 +101,8 @@ def optimize_monotonically_bright(
         total_horizontal_pairs = Int("1:total_horizontal_pairs")
         opt.add(total_horizontal_pairs == Sum(horizontal_pairs))
         total_height = Int("2:total_height")
-        non_none_vars = [l for l in l_vars if l is not None] + [
-            r for r in r_vars if r is not None
+        non_none_vars = [lv for lv in l_vars if lv is not None] + [
+            rv for rv in r_vars if rv is not None
         ]
         opt.add(total_height == Sum(non_none_vars))
         opt.maximize(total_horizontal_pairs)
@@ -113,8 +112,10 @@ def optimize_monotonically_bright(
             raise ValueError(f"Unsat at column pair {x}")
         model = opt.model()
 
-        for z, (l, r, l_var, r_var) in enumerate(zip(left, right, l_vars, r_vars)):
-            if l is None or r is None:
+        for z, (left_val, right_val, l_var, r_var) in enumerate(
+            zip(left, right, l_vars, r_vars)
+        ):
+            if left_val is None or right_val is None:
                 continue
             model_l = model.evaluate(l_var).as_long()  # type: ignore
             model_r = model.evaluate(r_var).as_long()  # type: ignore
@@ -138,9 +139,9 @@ def optimize_monotonically_bright(
             uf_parents[id] = uf_find(uf_parents[id])
         return uf_parents[id]
 
-    def uf_union(l: int, r: int) -> None:
-        root_l = uf_find(l)
-        root_r = uf_find(r)
+    def uf_union(left_id: int, right_id: int) -> None:
+        root_l = uf_find(left_id)
+        root_r = uf_find(right_id)
         if root_l == root_r:
             return
         rank_l = uf_ranks[root_l]

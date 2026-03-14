@@ -1,7 +1,6 @@
 from typing import TypedDict
 
 from collections import defaultdict
-from dataclasses import dataclass, field
 from enum import Enum
 from itertools import chain, pairwise
 
@@ -9,8 +8,8 @@ from litemapy import Schematic, Region, BlockState
 from nbtlib import Compound
 
 import NBT
+from mapart.reified import ReifiedMapArt, Block, Coords
 
-type Coords = tuple[int, int]
 
 class Staircasing(Enum):
     FLAT = 1
@@ -18,29 +17,17 @@ class Staircasing(Enum):
     DOWN = 3
     BOTH = 4
 
-@dataclass
-class Block:
-    block_name: str
-    height: int
-
 
 class StaircasedMapArtMeta(TypedDict, total=False):
     staircasing: Staircasing
     platforms: set[frozenset[Coords]]
 
 
-@dataclass
-class StaircasedMapArt:
+class StaircasedMapArt(ReifiedMapArt):
     blocks: list[list[Block | None]]
-    padding_heights: list[
-        int | None
-    ]  # the row of auxillary blocks north of the block grid
-    scaffolding: set[Coords] = field(default_factory=set)
-    meta: StaircasedMapArtMeta = field(default_factory=dict)  # type: ignore[assignment]
-
-    @property
-    def size(self) -> int:
-        return len(self.blocks[0])
+    padding_heights: list[int | None]
+    scaffolding: set[Coords]
+    meta: StaircasedMapArtMeta
 
     @property
     def all_heights(self) -> list[list[int | None]]:
@@ -138,9 +125,9 @@ class StaircasedMapArt:
                 uf_parents[xz] = uf_find(uf_parents[xz])
             return uf_parents[xz]
 
-        def uf_union(l: Coords, r: Coords) -> None:
-            root_l = uf_find(l)
-            root_r = uf_find(r)
+        def uf_union(left: Coords, right: Coords) -> None:
+            root_l = uf_find(left)
+            root_r = uf_find(right)
             if root_l == root_r:
                 return
             rank_l = uf_ranks[root_l]
