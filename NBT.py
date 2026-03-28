@@ -1,8 +1,13 @@
+# pyright: reportMissingTypeStubs=true
+
+from typing import cast
+
 from nbtlib import Compound, List
 
 
 def get_palette(schem: Compound) -> dict[int, str]:
-    return {index: str(entry["Name"]) for index, entry in enumerate(schem["palette"])}
+    palette = schem["palette"]
+    return {index: str(entry["Name"]) for index, entry in enumerate(palette)}
 
 
 def get_inverse_palette(schem: Compound) -> dict[str, int]:

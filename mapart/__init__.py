@@ -1,14 +1,10 @@
-from typing import TypeGuard
+from typing import TypeGuard, override
 
 from enum import Enum
 from dataclasses import dataclass
 from itertools import pairwise
 
 from nbtlib import Compound
-from mapart.reified import ReifiedMapArt
-from mapart.staircased import StaircasedMapArt
-
-__all__ = ["ReifiedMapArt", "StaircasedMapArt"]
 
 import NBT
 
@@ -17,7 +13,7 @@ class Shading(Enum):
     DARK = 1
     FLAT = 2
     LITE = 3
-    DARKER = 4  # special unobtainable in vanilla
+    DARKER = 4  # special value; unobtainable in survival
 
     @classmethod
     def from_heights(cls, shader: int, height: int) -> Shading:
@@ -35,6 +31,7 @@ class Pixel:
     block_name: str
     shading: Shading
 
+    @override
     def __str__(self) -> str:
         name = self.block_name.removeprefix("minecraft:")
         shading = self.shading.name
@@ -51,22 +48,21 @@ class ReificationStrategy(Enum):
 type Coords = tuple[int, int]
 
 
+MAPART_SIZE = 128
+
+
 @dataclass
 class MapArt:
     pixels: list[list[Pixel | None]]
 
-    @property
-    def size(self) -> int:
-        return len(self.pixels[0])
-
     @classmethod
-    def from_nbt_file(cls, schem: Compound, size: int = 128):
+    def from_nbt_file(cls, schem: Compound):
         # first row is padding height
         grid: list[list[tuple[str, int] | None]] = [
-            [None for _ in range(size)] for _ in range(size + 1)
+            [None for _ in range(MAPART_SIZE)] for _ in range(MAPART_SIZE + 1)
         ]
         for (x, y, z), block_name in NBT.get_blocks(schem):
-            if not (0 <= x <= size and 0 <= z < size + 1):
+            if not (0 <= x <= MAPART_SIZE and 0 <= z < MAPART_SIZE + 1):
                 raise ValueError("Block position out of mapart bounds")
             old_block = grid[z][x]
             if old_block is not None and old_block[1] > y:
@@ -95,22 +91,10 @@ class MapArt:
     def reify(self, strategy: ReificationStrategy) -> ReifiedMapArt:
         match strategy:
             case ReificationStrategy.SIMPLE:
-                return self._reify_simple()
+                raise NotImplementedError()
             case ReificationStrategy.PAIRWISE:
-                return self._reify_pairwise()
+                raise NotImplementedError()
             case ReificationStrategy.UNIVERSAL:
-                return self._reify_universal()
+                raise NotImplementedError()
             case ReificationStrategy.TWO_LAYER:
-                return self._reify_two_layer()
-
-    def _reify_simple(self) -> ReifiedMapArt:
-        raise ValueError("todo")
-
-    def _reify_pairwise(self) -> ReifiedMapArt:
-        raise ValueError("todo")
-
-    def _reify_universal(self) -> ReifiedMapArt:
-        raise ValueError("todo")
-
-    def _reify_two_layer(self) -> ReifiedMapArt:
-        raise ValueError("todo")
+                raise NotImplementedError()
