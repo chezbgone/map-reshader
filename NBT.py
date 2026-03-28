@@ -1,6 +1,5 @@
 # pyright: reportMissingTypeStubs=true
 
-from typing import cast
 
 from nbtlib import Compound, List
 

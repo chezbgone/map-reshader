@@ -11,7 +11,8 @@ Exported items:
     CompoundSchema -- `Compound` subclass that enforces a tag schema
 """
 __all__ = ["schema", "CompoundSchema"]
-def schema(name, dct, *, strict=...): # -> Any:
+
+def schema(name, dct, *, strict=...):  # -> Any:
     """Create a compound tag schema.
 
     This function is a short convenience function that makes it easy to
@@ -42,21 +43,15 @@ class CompoundSchema(Compound):
         schema -- Dictionary mapping keys to tag types or other schemas
         strict -- Boolean enabling strict schema validation
     """
+
     __slots__ = ...
     schema = ...
     strict = ...
-    def __init__(self, *args, strict=..., **kwargs) -> None:
+    def __init__(self, *args, strict=..., **kwargs) -> None: ...
+    def __setitem__(self, key, value):  # -> None:
         ...
-    
-    def __setitem__(self, key, value): # -> None:
+    def update(self, mapping, **kwargs):  # -> None:
         ...
-    
-    def update(self, mapping, **kwargs): # -> None:
-        ...
-    
-    def cast_item(self, key, value): # -> CompoundSchema:
+    def cast_item(self, key, value):  # -> CompoundSchema:
         """Cast schema item to the appropriate tag type."""
         ...
-    
-
-

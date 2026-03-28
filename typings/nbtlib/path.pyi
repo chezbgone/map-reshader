@@ -12,10 +12,11 @@ Exported items:
     InvalidPath -- Exception raised when creating an invalid nbt path
 """
 __all__ = ["Path", "InvalidPath", "NamedKey", "ListIndex", "CompoundMatch"]
+
 class InvalidPath(ValueError):
     """Raised when creating an invalid nbt path."""
-    ...
 
+    ...
 
 class Path(tuple):
     """Represents an nbt path.
@@ -23,101 +24,70 @@ class Path(tuple):
     Instances of this class can be used for indexing into list and compound
     tags for accessing deeply nested properties.
     """
+
     __slots__ = ...
-    def __new__(cls, path=...): # -> Self:
+    def __new__(cls, path=...):  # -> Self:
         ...
-    
-    def __getitem__(self, key): # -> Self:
+    def __getitem__(self, key):  # -> Self:
         ...
-    
-    def __add__(self, other): # -> Self | _NotImplementedType:
+    def __add__(self, other):  # -> Self | _NotImplementedType:
         ...
-    
-    def __radd__(self, other): # -> Path | _NotImplementedType:
+    def __radd__(self, other):  # -> Path | _NotImplementedType:
         ...
-    
-    def __eq__(self, other) -> bool:
-        ...
-    
-    def __ne__(self, other) -> bool:
-        ...
-    
-    def __hash__(self) -> int:
-        ...
-    
+    def __eq__(self, other) -> bool: ...
+    def __ne__(self, other) -> bool: ...
+    def __hash__(self) -> int: ...
     @classmethod
-    def from_accessors(cls, accessors=...): # -> Self:
+    def from_accessors(cls, accessors=...):  # -> Self:
         ...
-    
-    def traverse(self, tag): # -> tuple[list[tuple[None, Any]] | Any, Any | None, Any | None]:
+    def traverse(
+        self, tag
+    ):  # -> tuple[list[tuple[None, Any]] | Any, Any | None, Any | None]:
         ...
-    
-    def get(self, tag): # -> list[Any]:
+    def get(self, tag):  # -> list[Any]:
         ...
-    
-    def set(self, tag, value): # -> None:
+    def set(self, tag, value):  # -> None:
         ...
-    
-    def delete(self, tag): # -> None:
+    def delete(self, tag):  # -> None:
         ...
-    
-    def __repr__(self): # -> str:
+    def __repr__(self):  # -> str:
         ...
-    
-    def __str__(self) -> str:
-        ...
-    
+    def __str__(self) -> str: ...
 
-
-def can_be_converted_to_int(string): # -> bool:
+def can_be_converted_to_int(string):  # -> bool:
     ...
-
-def parse_accessors(path): # -> Generator[NamedKey | ListIndex | CompoundMatch, Any, tuple[()] | None]:
+def parse_accessors(
+    path,
+):  # -> Generator[NamedKey | ListIndex | CompoundMatch, Any, tuple[()] | None]:
     ...
-
-def extend_accessors(accessors, new_accessor): # -> tuple[*tuple[Any, ...], CompoundMatch]:
+def extend_accessors(
+    accessors, new_accessor
+):  # -> tuple[*tuple[Any, ...], CompoundMatch]:
     ...
 
 class NamedKey(NamedTuple):
     key: str
     UNQUOTED_REGEX = ...
-    def get(self, tags): # -> list[tuple[dict[Any, Any], Any]]:
+    def get(self, tags):  # -> list[tuple[dict[Any, Any], Any]]:
         ...
-    
-    def set(self, tags, value): # -> None:
+    def set(self, tags, value):  # -> None:
         ...
-    
-    def delete(self, tags): # -> None:
+    def delete(self, tags):  # -> None:
         ...
-    
-    def __str__(self) -> str:
-        ...
-    
-
+    def __str__(self) -> str: ...
 
 class ListIndex(NamedTuple):
     index: Optional[int]
-    def get(self, tags): # -> list[tuple[tuple[Any, int], Any]]:
+    def get(self, tags):  # -> list[tuple[tuple[Any, int], Any]]:
         ...
-    
-    def set(self, tags, value): # -> None:
+    def set(self, tags, value):  # -> None:
         ...
-    
-    def delete(self, tags): # -> None:
+    def delete(self, tags):  # -> None:
         ...
-    
-    def __str__(self) -> str:
-        ...
-    
-
+    def __str__(self) -> str: ...
 
 class CompoundMatch(NamedTuple):
     compound: Compound
-    def get(self, tags): # -> list[tuple[Any, Any]]:
+    def get(self, tags):  # -> list[tuple[Any, Any]]:
         ...
-    
-    def __str__(self) -> str:
-        ...
-    
-
-
+    def __str__(self) -> str: ...

@@ -12,11 +12,13 @@ EntityPosition = tuple[float, float, float]
 EntityRotation = tuple[float, float]
 EntityMotion = tuple[float, float, float]
 BlockPosition = tuple[int, int, int]
+
 class BlockState:
     """
     Represents an in-game block.
     :class:`BlockState` are immutable.
     """
+
     __block_id: str
     __properties: DiscriminatingDictionary
     __identifier_cache: Optional[str]
@@ -28,13 +30,13 @@ class BlockState:
         :param properties:  the properties of the block state as keyword parameters (e.g. *facing="north"*)
         """
         ...
-    
+
     def to_nbt(self) -> Compound:
         """
         Writes this block state to an nbt tag.
         """
         ...
-    
+
     @deprecated_name("fromnbt")
     @staticmethod
     def from_nbt(nbt: Compound) -> BlockState:
@@ -42,19 +44,17 @@ class BlockState:
         Reads a :class:`BlockState` from an nbt tag.
         """
         ...
-    
+
     @property
     def id(self) -> str:
         """
         The block's identifier.
         """
         ...
-    
+
     @property
     @deprecated("Use BlockState.id instead")
-    def blockid(self) -> str:
-        ...
-    
+    def blockid(self) -> str: ...
     @deprecated_name("with_blockid")
     def with_id(self, block_id: str) -> BlockState:
         """
@@ -63,7 +63,7 @@ class BlockState:
         :param block_id:  the block id for the new :class:`BlockState`
         """
         ...
-    
+
     def with_properties(self, **properties: Optional[str]) -> BlockState:
         """
         Returns a new copy of this :class:`BlockState` with new values for the properties given in keyword arguments.
@@ -74,7 +74,7 @@ class BlockState:
         :returns: A copy of this :class:`BlockState` with the given properties updated to new values
         """
         ...
-    
+
     def properties(self) -> Iterable[tuple[str, str]]:
         """
         Exposes the properties of this :class:`BlockState` using an iterator over its properties, in a similar fashion as :func:`dict.items()`.
@@ -82,7 +82,7 @@ class BlockState:
         :returns: An iterable over the properties, as property, value tuples.
         """
         ...
-    
+
     def to_block_state_identifier(self, skip_empty: bool = ...) -> str:
         """
         Returns an identifier that represents the BlockState in the Sponge Schematic Format (version 2).
@@ -94,26 +94,13 @@ class BlockState:
         :returns: An identifier that represents the BlockState in a Sponge schematic.
         """
         ...
-    
-    def __eq__(self, other: object) -> bool:
-        ...
-    
-    def __hash__(self) -> int:
-        ...
-    
-    def __repr__(self) -> str:
-        ...
-    
-    def __getitem__(self, key: str) -> Optional[str]:
-        ...
-    
-    def __len__(self) -> int:
-        ...
-    
-    def __contains__(self, key: str) -> bool:
-        ...
-    
 
+    def __eq__(self, other: object) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __repr__(self) -> str: ...
+    def __getitem__(self, key: str) -> Optional[str]: ...
+    def __len__(self) -> int: ...
+    def __contains__(self, key: str) -> bool: ...
 
 class Entity:
     """
@@ -123,6 +110,7 @@ class Entity:
     Most also have arbitrary data depending on their type
     (e.g. a sheep has a tag for its color and one indicating whether it has been sheared).
     """
+
     _id: str
     _data: Compound
     _position: EntityPosition
@@ -134,13 +122,13 @@ class Entity:
                             or an bnt compound tag with the entitie's data.
         """
         ...
-    
+
     def to_nbt(self) -> Compound:
         """
         Save this entity as an NBT tag.
         """
         ...
-    
+
     @deprecated_name("fromnbt")
     @staticmethod
     def from_nbt(nbt: Compound) -> Entity:
@@ -150,66 +138,49 @@ class Entity:
         :param nbt: An NBT tag with the entity's data
         """
         ...
-    
-    def add_tag(self, key: str, tag) -> None:
-        ...
-    
-    def get_tag(self, key: str) -> Base:
-        ...
-    
+
+    def add_tag(self, key: str, tag) -> None: ...
+    def get_tag(self, key: str) -> Base: ...
     @property
-    def data(self) -> Compound:
-        ...
-    
+    def data(self) -> Compound: ...
     @data.setter
-    def data(self, data: Compound) -> None:
-        ...
-    
+    def data(self, data: Compound) -> None: ...
     @property
     def id(self) -> str:
         """
         This entity's type identifier (e.g. *minecraft:pig* )
         """
         ...
-    
+
     @id.setter
-    def id(self, id: str) -> None:
-        ...
-    
+    def id(self, id: str) -> None: ...
     @property
     def position(self) -> EntityPosition:
         """
         The position of the entity.
         """
         ...
-    
+
     @position.setter
-    def position(self, position: EntityPosition) -> None:
-        ...
-    
+    def position(self, position: EntityPosition) -> None: ...
     @property
     def rotation(self) -> EntityRotation:
         """
         The rotation of the entity.
         """
         ...
-    
+
     @rotation.setter
-    def rotation(self, rotation: EntityRotation) -> None:
-        ...
-    
+    def rotation(self, rotation: EntityRotation) -> None: ...
     @property
     def motion(self) -> EntityMotion:
         """
         The velocity vector of the entity.
         """
         ...
-    
-    @motion.setter
-    def motion(self, motion: EntityMotion) -> None:
-        ...
-    
 
+    @motion.setter
+    def motion(self, motion: EntityMotion) -> None: ...
 
 class TileEntity:
     """
@@ -220,17 +191,16 @@ class TileEntity:
     For this reason, the :class:`TileEntity` class does not store an ID  but only a position.
     The ID can be inferred by looking up the :class:`BlockState` as the same position in the :class:`Region`.
     """
+
     _data: Compound
     _position: BlockPosition
-    def __init__(self, nbt: Compound) -> None:
-        ...
-    
+    def __init__(self, nbt: Compound) -> None: ...
     def to_nbt(self) -> Compound:
         """
         Saves the tile entity to NBT tag.
         """
         ...
-    
+
     @deprecated_name("fromnbt")
     @staticmethod
     def from_nbt(nbt: Compound) -> TileEntity:
@@ -240,33 +210,24 @@ class TileEntity:
         :param nbt: the tile entity's data as an NBT tag
         """
         ...
-    
-    def add_tag(self, key: str, tag) -> None:
-        ...
-    
-    def get_tag(self, key: str) -> Base:
-        ...
-    
+
+    def add_tag(self, key: str, tag) -> None: ...
+    def get_tag(self, key: str) -> Base: ...
     @property
-    def data(self) -> Compound:
-        ...
-    
+    def data(self) -> Compound: ...
     @data.setter
-    def data(self, data: Compound): # -> None:
+    def data(self, data: Compound):  # -> None:
         ...
-    
     @property
     def position(self) -> BlockPosition:
         """
         The tile entity's position within the :class:`Region`/
         """
         ...
-    
-    @position.setter
-    def position(self, position: BlockPosition): # -> None:
-        ...
-    
 
+    @position.setter
+    def position(self, position: BlockPosition):  # -> None:
+        ...
 
 def is_valid_identifier(identifier: str) -> bool:
     """
@@ -276,10 +237,7 @@ def is_valid_identifier(identifier: str) -> bool:
 
 class InvalidIdentifier(ValueError):
     identifier: str
-    def __init__(self, identifier: str) -> None:
-        ...
-    
-
+    def __init__(self, identifier: str) -> None: ...
 
 def assert_valid_identifier(identifier: str) -> str:
     """
@@ -293,11 +251,5 @@ def assert_valid_identifier(identifier: str) -> str:
     ...
 
 class RequiredKeyMissingException(Exception):
-    def __init__(self, key: str, message: str = ...) -> None:
-        ...
-    
-    def __str__(self) -> str:
-        ...
-    
-
-
+    def __init__(self, key: str, message: str = ...) -> None: ...
+    def __str__(self) -> str: ...

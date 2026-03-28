@@ -8,7 +8,6 @@ from nbtlib.tag import Compound, IntArray
 from typing_extensions import deprecated
 from typing import Any, Callable, Generator, Optional
 from .deprecation import deprecated_name
-from .info import *
 from .minecraft import BlockState, Entity, TileEntity
 from .storage import DiscriminatingDictionary
 
@@ -16,6 +15,7 @@ class Schematic:
     """
     Represents a schematic file in the Litematic format.
     """
+
     name: str
     author: str
     description: str
@@ -27,7 +27,16 @@ class Schematic:
     modified: int
     __regions: DiscriminatingDictionary
     __preview: IntArray
-    def __init__(self, name: str = ..., author: str = ..., description: str = ..., regions: Optional[dict[str, Region]] = ..., lm_version: int = ..., lm_subversion: int = ..., mc_version: int = ...) -> None:
+    def __init__(
+        self,
+        name: str = ...,
+        author: str = ...,
+        description: str = ...,
+        regions: Optional[dict[str, Region]] = ...,
+        lm_version: int = ...,
+        lm_subversion: int = ...,
+        mc_version: int = ...,
+    ) -> None:
         """
         Schematic can be created by optionally providing metadata and regions, or leaving them blank or default.
 
@@ -39,8 +48,15 @@ class Schematic:
         :param mc_version:  The Minecraft data version (you are unlikely to ever need to use this)
         """
         ...
-    
-    def save(self, file_path: str, update_meta: bool = ..., save_soft: bool = ..., gzipped: bool = ..., byteorder: str = ...) -> None:
+
+    def save(
+        self,
+        file_path: str,
+        update_meta: bool = ...,
+        save_soft: bool = ...,
+        gzipped: bool = ...,
+        byteorder: str = ...,
+    ) -> None:
         """
         Save this schematic to a file.
 
@@ -54,7 +70,7 @@ class Schematic:
         :raises ValueError: if this schematic does not have any region
         """
         ...
-    
+
     def to_nbt(self, save_soft: bool = ...) -> Compound:
         """
         Write the schematic to an NBT tag.
@@ -66,7 +82,7 @@ class Schematic:
         :raises ValueError: if this schematic does not have any region
         """
         ...
-    
+
     @deprecated_name("fromnbt")
     @staticmethod
     def from_nbt(nbt: Compound) -> Schematic:
@@ -80,14 +96,14 @@ class Schematic:
         :raises CorruptedSchematicError: if the schematic tag is malformed
         """
         ...
-    
+
     @deprecated_name("updatemeta")
     def update_metadata(self) -> None:
         """
         Update this schematic's metadata (set the modified time to the current time).
         """
         ...
-    
+
     @staticmethod
     def load(file_path) -> Schematic:
         """
@@ -100,7 +116,7 @@ class Schematic:
         :raises CorruptedSchematicError: if the schematic file is malformed in any way
         """
         ...
-    
+
     @property
     def regions(self) -> DiscriminatingDictionary:
         """
@@ -110,7 +126,7 @@ class Schematic:
         Using an incorrect type will raise a :class:`~litemapy.storage.DiscriminationError`.
         """
         ...
-    
+
     @property
     def width(self) -> int:
         """
@@ -119,7 +135,7 @@ class Schematic:
         This property is read-only.
         """
         ...
-    
+
     @property
     def height(self) -> int:
         """
@@ -128,7 +144,7 @@ class Schematic:
         This property is read-only.
         """
         ...
-    
+
     @property
     def length(self) -> int:
         """
@@ -137,21 +153,17 @@ class Schematic:
         This property is read-only.
         """
         ...
-    
-    @property
-    def preview(self) -> IntArray:
-        ...
-    
-    @preview.setter
-    def preview(self, value) -> None:
-        ...
-    
 
+    @property
+    def preview(self) -> IntArray: ...
+    @preview.setter
+    def preview(self, value) -> None: ...
 
 class Region:
     """
     Represents a schematic region.
     """
+
     __x: int
     __y: int
     __z: int
@@ -176,15 +188,17 @@ class Region:
         :raises ValueError: if either width, height or length is 0
         """
         ...
-    
+
     def to_nbt(self) -> Compound:
         """
         Write this region to an NBT tag.
 
         """
         ...
-    
-    def to_sponge_nbt(self, mc_version: int = ..., gzipped: bool = ..., endianness: str = ...) -> nbtlib.nbt.File:
+
+    def to_sponge_nbt(
+        self, mc_version: int = ..., gzipped: bool = ..., endianness: str = ...
+    ) -> nbtlib.nbt.File:
         """
         Returns the Region as an NBT Compound file that conforms to the Sponge Schematic Format (version 2) used by mods
         like WorldEdit.
@@ -202,7 +216,7 @@ class Region:
         :returns:           The Region represented as a Sponge Schematic NBT Compound file.
         """
         ...
-    
+
     @staticmethod
     def from_sponge_nbt(nbt: Compound) -> tuple[Region, int]:
         """
@@ -217,8 +231,10 @@ class Region:
                     and the Minecraft data version that the Sponge schematic was created for.
         """
         ...
-    
-    def to_structure_nbt(self, mc_version=..., gzipped=..., byteorder=...) -> nbtlib.nbt.File:
+
+    def to_structure_nbt(
+        self, mc_version=..., gzipped=..., byteorder=...
+    ) -> nbtlib.nbt.File:
         """
         Returns the Region as an NBT Compound file that conforms to Minecraft's structure NBT files.
 
@@ -233,7 +249,7 @@ class Region:
         :returns:           The Region represented as a Minecraft structure NBT file.
         """
         ...
-    
+
     @staticmethod
     def from_structure_nbt(structure: Compound) -> tuple[Region, str]:
         """
@@ -245,24 +261,21 @@ class Region:
                             and the Minecraft data version that the structure was created for
         """
         ...
-    
-    def __getitem__(self, position: tuple[int, int, int]) -> BlockState:
+
+    def __getitem__(self, position: tuple[int, int, int]) -> BlockState: ...
+    @deprecated(
+        "Region.getblock() is deprecated. Use array style syntax instead: region[x, y, z]"
+    )
+    def getblock(self, x: int, y: int, z: int) -> BlockState: ...
+    def __setitem__(
+        self, position: tuple[int, int, int], block: BlockState
+    ) -> None: ...
+    @deprecated(
+        "Region.setblock() is deprecated. Use array style syntax instead: region[x, y, z]"
+    )
+    def setblock(self, x: int, y: int, z: int, block: BlockState):  # -> None:
         ...
-    
-    @deprecated("Region.getblock() is deprecated. Use array style syntax instead: region[x, y, z]")
-    def getblock(self, x: int, y: int, z: int) -> BlockState:
-        ...
-    
-    def __setitem__(self, position: tuple[int, int, int], block: BlockState) -> None:
-        ...
-    
-    @deprecated("Region.setblock() is deprecated. Use array style syntax instead: region[x, y, z]")
-    def setblock(self, x: int, y: int, z: int, block: BlockState): # -> None:
-        ...
-    
-    def __contains__(self, block: BlockState) -> bool:
-        ...
-    
+    def __contains__(self, block: BlockState) -> bool: ...
     @deprecated_name("getblockcount")
     def count_blocks(self) -> int:
         """
@@ -271,7 +284,7 @@ class Region:
         :returns: the number of non-air blocks in the region
         """
         ...
-    
+
     @deprecated_name("getvolume")
     def volume(self) -> int:
         """
@@ -280,7 +293,7 @@ class Region:
         :returns: this region volume in blocks
         """
         ...
-    
+
     @deprecated_name("fromnbt")
     @staticmethod
     def from_nbt(nbt: Compound) -> Region:
@@ -290,119 +303,119 @@ class Region:
         :param nbt: an NBT tag to read the region from
         """
         ...
-    
+
     @deprecated_name("minschemx")
     def min_schem_x(self) -> int:
         """
         :returns:   the minimum X coordinate of this region in the schematics coordinate system
         """
         ...
-    
+
     @deprecated_name("maxschemx")
     def max_schem_x(self) -> int:
         """
         :returns:   the maximum X coordinate of this region in the schematics coordinate system
         """
         ...
-    
+
     @deprecated_name("minschemy")
     def min_schem_y(self) -> int:
         """
         :returns:   the minimum Y coordinate of this region in the schematics coordinate system
         """
         ...
-    
+
     @deprecated_name("maxschemy")
     def max_schem_y(self) -> int:
         """
         :returns:   the maximum Y coordinate of this region in the schematics coordinate system
         """
         ...
-    
+
     @deprecated_name("minschemz")
     def min_schem_z(self) -> int:
         """
         :returns:   the minimum Z coordinate of this region in the schematics coordinate system
         """
         ...
-    
+
     @deprecated_name("maxschemz")
     def max_schem_z(self) -> int:
         """
         :returns:   the maximum Z coordinate of this region in the schematics coordinate system
         """
         ...
-    
+
     @deprecated_name("minx")
     def min_x(self) -> int:
         """
         :returns:   the minimum X coordinate of this region in its own coordinate system
         """
         ...
-    
+
     @deprecated_name("maxx")
     def max_x(self) -> int:
         """
         :returns:   the maximum X coordinate of this region in its own coordinate system
         """
         ...
-    
+
     @deprecated_name("miny")
     def min_y(self) -> int:
         """
         :returns:   the minimum Y coordinate of this region in its own coordinate system
         """
         ...
-    
+
     @deprecated_name("maxy")
     def max_y(self) -> int:
         """
         :returns:   the maximum Y coordinate of this region in its own coordinate system
         """
         ...
-    
+
     @deprecated_name("minz")
     def min_z(self) -> int:
         """
         :returns:   the minimum Z coordinate of this region in its own coordinate system
         """
         ...
-    
+
     @deprecated_name("maxz")
     def max_z(self) -> int:
         """
         :returns:   the maximum Z coordinate of this region in its own coordinate system
         """
         ...
-    
+
     @deprecated_name("xrange")
     def range_x(self) -> range:
         """
         :returns:   the range of coordinates this region contains along its X axis
         """
         ...
-    
+
     @deprecated_name("yrange")
     def range_y(self) -> range:
         """
         :returns:   the range of coordinates this region contains along its Y axis
         """
         ...
-    
+
     @deprecated_name("zrange")
     def range_z(self) -> range:
         """
         :returns:   the range of coordinates this region contains along its Z axis
         """
         ...
-    
+
     @deprecated_name("allblockpos")
     def block_positions(self) -> Generator[tuple[int, int, int], None, None]:
         """
         :returns:   an iterator over the coordinates this region contains in its own coordinate system
         """
         ...
-    
+
     @property
     def x(self) -> int:
         """
@@ -410,7 +423,7 @@ class Region:
         This property is read only.
         """
         ...
-    
+
     @property
     def y(self) -> int:
         """
@@ -418,7 +431,7 @@ class Region:
         This property is read only.
         """
         ...
-    
+
     @property
     def z(self) -> int:
         """
@@ -426,7 +439,7 @@ class Region:
         The property is read only.
         """
         ...
-    
+
     @property
     def width(self) -> int:
         """
@@ -434,7 +447,7 @@ class Region:
         This property is read only.
         """
         ...
-    
+
     @property
     def height(self) -> int:
         """
@@ -442,7 +455,7 @@ class Region:
         This property is read only.
         """
         ...
-    
+
     @property
     def length(self) -> int:
         """
@@ -450,29 +463,25 @@ class Region:
         This property is read only.
         """
         ...
-    
+
     @property
     def entities(self) -> list[Entity]:
         """
         The entities within the region.
         """
         ...
-    
+
     @property
     def tile_entities(self) -> list[TileEntity]:
         """
         The tile entities within the region.
         """
         ...
-    
+
     @property
-    def block_ticks(self) -> list[Compound]:
-        ...
-    
+    def block_ticks(self) -> list[Compound]: ...
     @property
-    def fluid_ticks(self) -> list[Compound]:
-        ...
-    
+    def fluid_ticks(self) -> list[Compound]: ...
     @property
     def palette(self) -> tuple[BlockState, ...]:
         """
@@ -482,8 +491,14 @@ class Region:
         each entry is assured to have at least one instance in the region.
         """
         ...
-    
-    def as_schematic(self, name: str = ..., author: str = ..., description: str = ..., mc_version: int = ...) -> Schematic:
+
+    def as_schematic(
+        self,
+        name: str = ...,
+        author: str = ...,
+        description: str = ...,
+        mc_version: int = ...,
+    ) -> Schematic:
         """
         Creates a schematic that contains that region at the origin.
 
@@ -493,7 +508,7 @@ class Region:
         :param mc_version:  The Minecraft data version (you are unlikely to ever need to use this)
         """
         ...
-    
+
     def filter(self, function: Callable[[BlockState], BlockState]) -> None:
         """
         Replaces all occurrences of :class:`BlockState` with others by providing a mapping function.
@@ -504,7 +519,7 @@ class Region:
         :param function: a mapping function
         """
         ...
-    
+
     def replace(self, replace: BlockState, replace_with: BlockState) -> None:
         """
         Replace all occurrences of a :class:`BlockState` with another.
@@ -515,11 +530,7 @@ class Region:
         :param replace_with:    a new blockstate to replace the old one with
         """
         ...
-    
-
 
 AIR = BlockState("minecraft:air")
-class CorruptedSchematicError(Exception):
-    ...
 
-
+class CorruptedSchematicError(Exception): ...

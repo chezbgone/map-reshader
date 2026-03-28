@@ -14,3 +14,6 @@ dependencies = [
 dev = [
     "ruff>=0.15.4",
 ]
+
+[tool.ruff]
+exclude = ["typings"]
