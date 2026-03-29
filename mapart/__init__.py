@@ -1,100 +1,12 @@
-from typing import TypeGuard, override
+from mapart.mapart import MAPART_SIZE, MapArt, Pixel, Shading
+from mapart.reified import ReifiedMapArt
+from mapart.simple import SimpleMapArt
 
-from enum import Enum
-from dataclasses import dataclass
-from itertools import pairwise
-
-from nbtlib import Compound
-
-import NBT
-
-
-class Shading(Enum):
-    DARK = 1
-    FLAT = 2
-    LITE = 3
-    DARKER = 4  # special value; unobtainable in survival
-
-    @classmethod
-    def from_heights(cls, shader: int, height: int) -> Shading:
-        if shader > height:
-            return cls.DARK
-        if shader < height:
-            return cls.LITE
-        if shader == height:
-            return cls.FLAT
-        raise ValueError("Should never occur")
-
-
-@dataclass
-class Pixel:
-    block_name: str
-    shading: Shading
-
-    @override
-    def __str__(self) -> str:
-        name = self.block_name.removeprefix("minecraft:")
-        shading = self.shading.name
-        return f"Pixel({name}, {shading})"
-
-
-class ReificationStrategy(Enum):
-    SIMPLE = 1
-    PAIRWISE = 2
-    UNIVERSAL = 3
-    TWO_LAYER = 4
-
-
-type Coords = tuple[int, int]
-
-
-MAPART_SIZE = 128
-
-
-@dataclass
-class MapArt:
-    pixels: list[list[Pixel | None]]
-
-    @classmethod
-    def from_nbt_file(cls, schem: Compound):
-        # first row is padding height
-        grid: list[list[tuple[str, int] | None]] = [
-            [None for _ in range(MAPART_SIZE)] for _ in range(MAPART_SIZE + 1)
-        ]
-        for (x, y, z), block_name in NBT.get_blocks(schem):
-            if not (0 <= x <= MAPART_SIZE and 0 <= z < MAPART_SIZE + 1):
-                raise ValueError("Block position out of mapart bounds")
-            old_block = grid[z][x]
-            if old_block is not None and old_block[1] > y:
-                # not overriding block
-                continue
-            grid[z][x] = (block_name, int(y))
-
-        def no_nones[A](lst: list[list[A | None]]) -> TypeGuard[list[list[A]]]:
-            return all(None not in row for row in lst)
-
-        assert no_nones(grid)
-
-        pixels = [
-            [
-                Pixel(block_name, Shading.from_heights(shader_height, block_height))
-                if block_name != "minecraft:air"
-                else None
-                for ((_, shader_height), (block_name, block_height)) in zip(
-                    shader_row, row
-                )
-            ]
-            for (shader_row, row) in pairwise(grid)
-        ]
-        return cls(pixels)
-
-    def reify(self, strategy: ReificationStrategy) -> ReifiedMapArt:
-        match strategy:
-            case ReificationStrategy.SIMPLE:
-                raise NotImplementedError()
-            case ReificationStrategy.PAIRWISE:
-                raise NotImplementedError()
-            case ReificationStrategy.UNIVERSAL:
-                raise NotImplementedError()
-            case ReificationStrategy.TWO_LAYER:
-                raise NotImplementedError()
+__all__ = [
+    "MAPART_SIZE",
+    "MapArt",
+    "Pixel",
+    "Shading",
+    "ReifiedMapArt",
+    "SimpleMapArt",
+]
