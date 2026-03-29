@@ -6,8 +6,9 @@ import nbtlib
 import numpy as np
 from nbtlib.tag import Compound, IntArray
 from typing_extensions import deprecated
-from typing import Any, Callable, Generator, Optional
+from typing import Any, Callable, Generator, Literal, Optional
 from .deprecation import deprecated_name
+from .info import *
 from .minecraft import BlockState, Entity, TileEntity
 from .storage import DiscriminatingDictionary
 
@@ -105,7 +106,7 @@ class Schematic:
         ...
 
     @staticmethod
-    def load(file_path) -> Schematic:
+    def load(file_path: str) -> Schematic:
         """
         Read a schematic from a file.
 
@@ -157,7 +158,7 @@ class Schematic:
     @property
     def preview(self) -> IntArray: ...
     @preview.setter
-    def preview(self, value) -> None: ...
+    def preview(self, value: IntArray) -> None: ...
 
 class Region:
     """
@@ -171,12 +172,14 @@ class Region:
     __height: int
     __length: int
     __palette: list[BlockState]
-    __blocks: np.ndarray[np.uint32, Any]
+    __blocks: np.ndarray[tuple[int, int, int], np.dtype[np.uint32]]
     __entities: list[Entity]
     __block_ticks: list[Compound]
     __fluid_ticks: list[Compound]
     __tile_entities: list[TileEntity]
-    def __init__(self, x, y, z, width, height, length) -> None:
+    def __init__(
+        self, x: int, y: int, z: int, width: int, height: int, length: int
+    ) -> None:
         """
         :param x:       the X coordinate of the region in the schematic
         :param y:       the Y coordinate of the region in the schematic
@@ -233,7 +236,10 @@ class Region:
         ...
 
     def to_structure_nbt(
-        self, mc_version=..., gzipped=..., byteorder=...
+        self,
+        mc_version: int = ...,
+        gzipped: bool = ...,
+        byteorder: Literal["big", "little"] = ...,
     ) -> nbtlib.nbt.File:
         """
         Returns the Region as an NBT Compound file that conforms to Minecraft's structure NBT files.
@@ -273,8 +279,7 @@ class Region:
     @deprecated(
         "Region.setblock() is deprecated. Use array style syntax instead: region[x, y, z]"
     )
-    def setblock(self, x: int, y: int, z: int, block: BlockState):  # -> None:
-        ...
+    def setblock(self, x: int, y: int, z: int, block: BlockState) -> None: ...
     def __contains__(self, block: BlockState) -> bool: ...
     @deprecated_name("getblockcount")
     def count_blocks(self) -> int:
@@ -531,6 +536,6 @@ class Region:
         """
         ...
 
-AIR = BlockState("minecraft:air")
+AIR: BlockState
 
 class CorruptedSchematicError(Exception): ...

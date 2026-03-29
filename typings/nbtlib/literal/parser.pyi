@@ -14,12 +14,31 @@ Exported classes:
 Exported exceptions:
     InvalidLiteral -- Raised when parsing invalid nbt literals
 """
+from collections import namedtuple
+from re import Pattern
+from typing import Any, Generator, Never, Self, override
+
+from nbtlib.tag import (
+    Byte,
+    ByteArray,
+    IntArray,
+    List,
+    LongArray,
+    Short,
+    Long,
+    Float,
+    Double,
+)
+
 __all__ = ["parse_nbt", "InvalidLiteral", "tokenize", "Parser"]
-ESCAPE_REGEX = ...
-TOKENS = ...
-TOKENS_REGEX = ...
-NUMBER_SUFFIXES = ...
-LITERAL_ALIASES = ...
+
+ESCAPE_REGEX: Pattern[str]
+TOKENS: dict[str, str]
+TOKENS_REGEX: Pattern[str]
+NUMBER_SUFFIXES: dict[
+    str, type[Byte] | type[Short] | type[Long] | type[Float] | type[Double]
+]
+LITERAL_ALIASES: dict[str, Byte]
 
 class InvalidLiteral(ValueError):
     """Exception raised when parsing invalid nbt literals.
@@ -29,15 +48,16 @@ class InvalidLiteral(ValueError):
     the nbt string (start_index, end_index). The second argument is the
     actual error message.
     """
+    @override
     def __str__(self) -> str: ...
 
-def parse_nbt(literal):  # -> Any:
+def parse_nbt(literal) -> Any:
     """Parse a literal nbt string and return the resulting tag."""
     ...
 
-Token = ...
+Token = namedtuple("Token", ["type", "value", "span"])
 
-def tokenize(string):  # -> Generator[Token, Any, None]:
+def tokenize(string: str) -> Generator[Token]:
     """Match and yield all the tokens of the input string."""
     ...
 
@@ -50,65 +70,65 @@ class Parser:
     The parser will raise an InvalidLiteral exception if it encounters
     an invalid nbt literal while parsing.
     """
-    def __init__(self, token_stream) -> None: ...
-    def error(self, message):  # -> InvalidLiteral:
+    def __init__(self, token_stream: Generator[Token]) -> None: ...
+    def error(self, message) -> InvalidLiteral:
         """Create an InvalidLiteral using the current token position."""
         ...
 
-    def next(self):  # -> Self:
+    def next(self) -> Self:
         """Move to the next token in the token stream."""
         ...
 
-    def parse(self):  # -> Any:
+    def parse(self) -> Any:
         """Parse and return an nbt literal from the token stream."""
         ...
 
-    def parse_quoted_string(self):  # -> String:
+    def parse_quoted_string(self) -> String:
         """Parse a quoted string from the token stream."""
         ...
 
-    def parse_number(self):  # -> Byte | Double | Float | Long | Short | Int | String:
+    def parse_number(self) -> Byte | Double | Float | Long | Short | Int | String:
         """Parse a number from the token stream."""
         ...
 
-    def parse_string(self):  # -> Byte | String:
+    def parse_string(self) -> Byte | String:
         """Parse a regular unquoted string from the token stream."""
         ...
 
-    def collect_tokens_until(self, token_type):  # -> Generator[Any | None, Any, None]:
+    def collect_tokens_until(self, token_type) -> Generator[Any | None]:
         """Yield the item tokens in a comma-separated tag collection."""
         ...
 
-    def parse_compound(self):  # -> Compound:
+    def parse_compound(self) -> Compound:
         """Parse a compound from the token stream."""
         ...
 
     def array_items(
-        self, number_type, *, number_suffix=...
-    ):  # -> Generator[int, Any, None]:
+        self, number_type: Any, *, number_suffix: str = ...
+    ) -> Generator[int]:
         """Parse and yield array items from the token stream."""
         ...
 
-    def parse_byte_array(self):  # -> ByteArray:
+    def parse_byte_array(self) -> ByteArray:
         """Parse a byte array from the token stream."""
         ...
 
-    def parse_int_array(self):  # -> IntArray:
+    def parse_int_array(self) -> IntArray:
         """Parse an int array from the token stream."""
         ...
 
-    def parse_long_array(self):  # -> LongArray:
+    def parse_long_array(self) -> LongArray:
         """Parse a long array from the token stream."""
         ...
 
-    def parse_list(self):  # -> List:
+    def parse_list(self) -> List:
         """Parse a list from the token stream."""
         ...
 
-    def parse_invalid(self):
+    def parse_invalid(self) -> Never:
         """Parse an invalid token from the token stream."""
         ...
 
-    def unquote_string(self, string):
+    def unquote_string(self, string: str) -> str:
         """Return the unquoted value of a quoted string."""
         ...
