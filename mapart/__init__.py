@@ -1,6 +1,7 @@
 from mapart.mapart import MAPART_SIZE, MapArt, Pixel, Shading
 from mapart.reified import ReifiedMapArt
 from mapart.simple import SimpleMapArt
+from mapart.dual import DualLayerMapArt
 
 __all__ = [
     "MAPART_SIZE",
@@ -9,4 +10,5 @@ __all__ = [
     "Shading",
     "ReifiedMapArt",
     "SimpleMapArt",
+    "DualLayerMapArt",
 ]
