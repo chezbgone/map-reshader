@@ -59,7 +59,7 @@ class SimpleMapArt(ReifiedMapArt):
         left = [0] * (n + 1)
         for i, p in enumerate(pixels):
             if p is None:
-                left[i] = 0
+                left[i + 1] = 0
                 continue
             match p.shading:
                 case Shading.LITE:

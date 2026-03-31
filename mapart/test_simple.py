@@ -10,7 +10,7 @@ from mapart.simple import Block, FillerBlock, SimpleMapArt
 def pixel() -> st.SearchStrategy[Pixel | None]:
     """Strategy for generating a Pixel or None."""
     return st.one_of(
-        # st.none(),
+        st.none(),
         st.builds(
             Pixel,
             block_name=st.text(
@@ -32,12 +32,14 @@ def test_pixel_column_to_simplepixels(column: list[Pixel | None]) -> None:
         if pixel is None:
             assert (bot is None) or isinstance(bot, FillerBlock)
             continue
+        if bot is not None:
+            assert bot.height >= 0
         assert isinstance(bot, Block)
         assert bot.block == pixel.block_name
 
         match pixel.shading:
             case Shading.LITE:
-                assert top is None or bot.height > top.height
+                assert top is None or bot.height > top.height, f'{result=}'
             case Shading.FLAT:
                 assert top is not None and bot.height == top.height
             case Shading.DARK:
