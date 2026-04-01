@@ -26,10 +26,8 @@ def pixel() -> st.SearchStrategy[Pixel | None]:
     st.integers(min_value=0, max_value=127),
     st.lists(pixel(), min_size=1, max_size=128),
 )
-@settings(max_examples=100, print_blob=True)
-def test_pixel_column_to_layerpixels(
-    x: int, column: list[Pixel | None]
-) -> None:
+@settings(max_examples=1000, print_blob=True)
+def test_pixel_column_to_layerpixels(x: int, column: list[Pixel | None]) -> None:
     """Test conversion of a column of Pixels to three layer columns."""
     result_bottom, result_top_before, result_top_after = (
         DualLayerMapArt.pixel_column_to_layerpixels(x, column)
@@ -48,7 +46,6 @@ def test_pixel_column_to_layerpixels(
         pixel,
         ((bot_, top_before_, top_after_), (bot, top_before, top_after)),
     ) in enumerate(zip(column, pairwise(results))):
-
         # select which top to use based on parity
         is_even = (x + z) % 2 == 0
         top = top_before if is_even else top_after
