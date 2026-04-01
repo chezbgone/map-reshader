@@ -11,7 +11,6 @@ class Shading(Enum):
     DARK = 1
     FLAT = 2
     LITE = 3
-    DARKER = 4  # special value; unobtainable in survival
 
     @classmethod
     def from_heights(cls, shader: int, height: int) -> Shading:

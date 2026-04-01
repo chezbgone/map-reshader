@@ -39,10 +39,8 @@ def test_pixel_column_to_simplepixels(column: list[Pixel | None]) -> None:
 
         match pixel.shading:
             case Shading.LITE:
-                assert top is None or bot.height > top.height, f'{result=}'
+                assert top is None or bot.height > top.height, f"{result=}"
             case Shading.FLAT:
                 assert top is not None and bot.height == top.height
             case Shading.DARK:
                 assert top is not None and bot.height < top.height
-            case Shading.DARKER:
-                raise ValueError("should never happen")

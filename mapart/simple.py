@@ -68,8 +68,6 @@ class SimpleMapArt(ReifiedMapArt):
                     left[i + 1] = left[i]
                 case Shading.DARK:
                     left[i + 1] = 0
-                case Shading.DARKER:
-                    raise ValueError("DARKER shading unobtainable in vanilla")
 
         # right[i] = min height at position i imposed by constraints to the right
         right = [0] * (n + 1)
@@ -84,8 +82,6 @@ class SimpleMapArt(ReifiedMapArt):
                     right[i] = right[i + 1]
                 case Shading.DARK:
                     right[i] = right[i + 1] + 1
-                case Shading.DARKER:
-                    raise ValueError("DARKER shading unobtainable in vanilla")
 
         padding, *heights = [max(l, r) for l, r in zip(left, right, strict=True)]
         tentative_blocks: list[SimplePixel] = [
